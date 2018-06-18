@@ -113,8 +113,8 @@ function get_data()
 
      	$pdo = new PDO($dsn, $user, $pass, $options);
 
-     	$sql = 'SELECT * FROM categories AS c JOIN category_links AS cl ON c.id_category = cl.child_id WHERE cl.parent_id = 1';
-     	// $sql = 'SELECT * FROM categories AS c JOIN category_links AS cl ON c.id_category = cl.child_id';
+     	// $sql = 'SELECT * FROM categories AS c JOIN category_links AS cl ON c.id_category = cl.child_id WHERE cl.parent_id = 1';
+     	$sql = 'SELECT * FROM categories AS c JOIN category_links AS cl ON c.id_category = cl.child_id';
 
 		$get_data = $pdo->query($sql);
 		$pdo = null;
@@ -146,8 +146,10 @@ function get_data()
 
    	return $result;
 	}
+
+	// rebuildArray(get_data());
 	
-	function buildTree($categories, $cat = 0) {
+	function buildTree($categories, $cat = 1) {
    	$html = '<ul>';
 
    	foreach ($categories[$cat] as $category) {
@@ -174,9 +176,9 @@ function get_data()
    	return $html;
 	}
 
-	// function getTree($categories) {
-   // 	return buildTree(rebuildArray($categories));
-	// }
-	// echo getTree(get_data());
+	function getTree($categories) {
+   	return buildTree(rebuildArray($categories));
+	}
+	echo getTree(get_data());
 
 ?>
