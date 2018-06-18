@@ -58,47 +58,7 @@
 
 <?php 
 
-/*
-$cats = [
-    [
-        'id_category' => 1,
-        'category_name' => 'Каталог',
-        'parent_id' => 1,
-        'child_id' => 1,
-        'level' => 0
-    ],
-    [
-        'id_category' => 1,
-        'category_name' => 'Одежда',
-        'parent_id' => 1,
-        'child_id' => 2,
-        'level' => 1
-    ],
-    [
-        'id_category' => 1,
-        'category_name' => 'Продукты',
-        'parent_id' => 1,
-        'child_id' => 3,
-        'level' => 1
-    ],
-    [
-        'id_category' => 1,
-        'category_name' => 'Верхняя одежда',
-        'parent_id' => 1,
-        'child_id' => 4,
-        'level' => 2
-    ],
-    [
-        'id_category' => 1,
-        'category_name' => 'Молочные продукты',
-        'parent_id' => 1,
-        'child_id' => 5,
-        'level' => 2
-    ],
-];
-*/
-
-function get_data()
+	function get_data()
 	{
 		$database = 'algorithms_and_data';
   		$user = 'root';
@@ -133,8 +93,9 @@ function get_data()
    	$result = [];
 
    	foreach ($categories as $category) {
-   	   if(!isset($result[$category['parent_id']])) {
-   	       $result[$category['parent_id']] = [];
+   	   if(!isset($result[$category['parent_id']]))
+   	   {
+   	      $result[$category['parent_id']] = [];
    	   }
    	   $result[$category['parent_id']][] = $category;
    	}
@@ -149,19 +110,34 @@ function get_data()
 
 	// rebuildArray(get_data());
 	
-	function buildTree($categories, $cat = 1) {
+	function buildTree($categories, $cat = 0) {
    	$html = '<ul>';
+
+   	// if (!isset($categories[$cat])) {
+   	// 	echo($cat++);
+   	// }
+   	echo(++$cat);
 
    	foreach ($categories[$cat] as $category) {
 
-      	$html .= '<li>' . $category['category_name'];
+   		// if ($category['parent_id'] != $category['child_id'])
+   		// {}
+      	$html .= '<li>' . $category['category_name'] . 
+      		' | parent_id - ' . $category['parent_id'] . 
+      		' | child_id - ' . $category['child_id']
+      		;
+      	
 
       	// if(isset($categories[$category['level']]) && $categories[$category['parent_id']] != $categories[$category['child_id']])
+      	// if($category['parent_id'] == $category['child_id'])
       	if($category['parent_id'] == $category['child_id'])
-      	// if(isset($categories[$category['id_category']]))
+      	// if($category['parent_id'] == $category['child_id'])
+      	// if(isset($categories[$category['parent_id']]) && $category['parent_id'] != 1)
+      	// if(isset($categories[$category['parent_id']]))
+      	// if(isset($categories[$category['child_id']]))
+      	// if(isset($categories[$category['level']]))
       	{
             $html .= buildTree($categories, $category['parent_id']);
-            // $html .= buildTree($categories);
       	}
       	$html .= '</li>';
    	}
@@ -169,10 +145,10 @@ function get_data()
    	$html .= '</ul>';
 
 
-   	// echo "<pre>";
-   	// echo "html";
-   	// var_dump($html);
-   	// echo "</pre>";
+   	echo "<pre>";
+   	echo "html";
+   	var_dump($html);
+   	echo "</pre>";
    	return $html;
 	}
 
