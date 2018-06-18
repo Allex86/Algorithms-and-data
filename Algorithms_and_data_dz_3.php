@@ -1,6 +1,5 @@
 
 <?php
-
 	$check_palindrome ='';
 
 	if (isset($_POST['check_palindrome'])) {
@@ -15,7 +14,7 @@
 		}
 	}
 
-	function Check($check_palindrome, $l)	/* ! ! ! php 7.1 ! ! ! */
+	function Check($check_palindrome, $l)	// ! ! ! php 7.1 ! ! !
 	{
 		if ($l > 0 && $check_palindrome[$l-1] !== $check_palindrome[$l*(-1)]) 
 		{
@@ -27,7 +26,6 @@
 		}
 		return print "Yes! It`s a palindrome!!! &#9786;";
 	}
-	
 ?>
 
 <!DOCTYPE html>
@@ -93,63 +91,49 @@
    	$result = [];
 
    	foreach ($categories as $category) {
-   	   if(!isset($result[$category['parent_id']]))
+   	   if(!isset($result[$category['level']]))
    	   {
-   	      $result[$category['parent_id']] = [];
+   	      $result[$category['level']] = [];
    	   }
-   	   $result[$category['parent_id']][] = $category;
+   	   $result[$category['level']][] = $category;
    	}
 
-   	echo "<pre>";
-   	echo "rebuildArray result ";
-   	var_dump($result);
-   	echo "</pre>";
+   	// echo "<pre>";
+   	// echo "rebuildArray result ";
+   	// var_dump($result);
+   	// echo "</pre>";
 
    	return $result;
 	}
-
-	// rebuildArray(get_data());
 	
 	function buildTree($categories, $cat = 0) {
-   	$html = '<ul>';
+		if (isset($categories[$cat])) 
+		{
+   		$html = '<ul>';
 
-   	// if (!isset($categories[$cat])) {
-   	// 	echo($cat++);
-   	// }
-   	echo(++$cat);
+   		foreach ($categories[$cat] as $category) {
 
-   	foreach ($categories[$cat] as $category) {
+      		$html .= '<li>' . $category['category_name'] . 
+      			' | parent_id - ' . $category['parent_id'] . 
+      			' | child_id - ' . $category['child_id']
+      			;
 
-   		// if ($category['parent_id'] != $category['child_id'])
-   		// {}
-      	$html .= '<li>' . $category['category_name'] . 
-      		' | parent_id - ' . $category['parent_id'] . 
-      		' | child_id - ' . $category['child_id']
-      		;
-      	
+      		if($category['parent_id'] == $category['child_id'])
+      		{
+      	      $html .= buildTree($categories, $category['parent_id']);
+      		}
+      		$html .= '</li>';
+   		}
 
-      	// if(isset($categories[$category['level']]) && $categories[$category['parent_id']] != $categories[$category['child_id']])
-      	// if($category['parent_id'] == $category['child_id'])
-      	if($category['parent_id'] == $category['child_id'])
-      	// if($category['parent_id'] == $category['child_id'])
-      	// if(isset($categories[$category['parent_id']]) && $category['parent_id'] != 1)
-      	// if(isset($categories[$category['parent_id']]))
-      	// if(isset($categories[$category['child_id']]))
-      	// if(isset($categories[$category['level']]))
-      	{
-            $html .= buildTree($categories, $category['parent_id']);
-      	}
-      	$html .= '</li>';
+   		$html .= '</ul>';
+
+
+   		// echo "<pre>";
+   		// echo "html";
+   		// var_dump($html);
+   		// echo "</pre>";
+   		return $html;
    	}
-
-   	$html .= '</ul>';
-
-
-   	echo "<pre>";
-   	echo "html";
-   	var_dump($html);
-   	echo "</pre>";
-   	return $html;
 	}
 
 	function getTree($categories) {
