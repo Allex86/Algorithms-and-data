@@ -1,5 +1,12 @@
 
 <?php
+
+	//Урок 3. Рекурсия
+// 1. Реализовать вывод меню на основе Clojure table.
+// 2. Дано слово, состоящее только из строчных латинских букв. Проверить, является ли это слово палиндромом. 
+// При решении этой задачи нельзя пользоваться циклами.
+// 3. *Рассмотреть структуру данных Nested Sets. По возможности реализовать ее хранение и вывод меню.
+
 	$check_palindrome ='';
 
 	if (isset($_POST['check_palindrome'])) {
@@ -95,7 +102,7 @@
    	   {
    	      $result[$category['level']] = [];
    	   }
-   	   $result[$category['level']][] = $category;
+   	   $result[$category['level']][$category['child_id']] = $category;
    	}
 
    	// echo "<pre>";
@@ -106,21 +113,18 @@
    	return $result;
 	}
 	
-	function buildTree($categories, $cat = 0) {
-		if (isset($categories[$cat])) 
+	function buildTree($categories, $lvl = 0) {
+		if (isset($categories[$lvl])) 
 		{
    		$html = '<ul>';
 
-   		foreach ($categories[$cat] as $category) {
+   		foreach ($categories[$lvl] as $category) {
 
-      		$html .= '<li>' . $category['category_name'] . 
-      			' | parent_id - ' . $category['parent_id'] . 
-      			' | child_id - ' . $category['child_id']
-      			;
+      		$html .= '<li>' . $category['category_name'];
 
       		if($category['parent_id'] == $category['child_id'])
       		{
-      	      $html .= buildTree($categories, $category['parent_id']);
+      	      $html .= buildTree($categories, $category['level']+1);
       		}
       		$html .= '</li>';
    		}
