@@ -61,9 +61,9 @@
 </body>
 </html>
 
-<?php 
+<?php // - - - - Closure Table - - - - -
 
-	function get_data()
+	function get_data($sql)
 	{
 		$database = 'algorithms_and_data';
   		$user = 'root';
@@ -79,7 +79,7 @@
      	$pdo = new PDO($dsn, $user, $pass, $options);
 
      	// $sql = 'SELECT * FROM categories AS c JOIN category_links AS cl ON c.id_category = cl.child_id WHERE cl.parent_id = 1';
-     	$sql = 'SELECT * FROM categories AS c JOIN category_links AS cl ON c.id_category = cl.child_id';
+     	// $sql = 'SELECT * FROM categories AS c JOIN category_links AS cl ON c.id_category = cl.child_id';
 
 		$get_data = $pdo->query($sql);
 		$pdo = null;
@@ -92,6 +92,18 @@
 		// echo "</pre>";
 
 		return $data;
+	}
+
+	function get_closure()
+	{
+		$sql = 'SELECT * FROM categories AS c JOIN category_links AS cl ON c.id_category = cl.child_id';
+		return get_data($sql);
+	}
+
+	function get_nested()
+	{
+		$sql = 'SELECT * FROM nested_sets';
+		return get_data($sql);
 	}
 
 	function rebuildArray($categories) {
@@ -109,7 +121,6 @@
    	// echo "rebuildArray result ";
    	// var_dump($result);
    	// echo "</pre>";
-
    	return $result;
 	}
 	
@@ -143,6 +154,57 @@
 	function getTree($categories) {
    	return buildTree(rebuildArray($categories));
 	}
-	echo getTree(get_data());
+	echo getTree(get_closure());
 
+?>
+
+<?php // - - - - - Nested sets - - - - -
+	echo "<pre>";
+	// var_dump(get_nested());
+	// var_dump(rebuildNnestedArray(get_nested()));
+	var_dump(buildNnestedTree(rebuildNnestedArray(get_nested())));
+	// var_dump(buildNnestedTree());
+	echo "</pre>";
+
+	function rebuildNnestedArray($categories) {
+   	$result = [];
+
+   	foreach ($categories as $category) {
+   	   if(!isset($result[$category['level']]))
+   	   {
+   	      $result[$category['level']] = [];
+   	   }
+   	   $result[$category['level']][$category['nleft']] = $category;
+   	}
+   	return $result;
+	}
+
+	function buildNnestedTree($categories, $lvl = 1) 
+	{
+		if (isset($categories[$lvl]))
+		{
+   		$html = '<ul>';
+
+   		foreach ($categories[$lvl] as $category) {
+   			
+      		$html .= '<li>' . $category['id'];
+
+      		if($category['nright'] !== $category['nleft']+1)
+      		{
+      			$html .= buildNnestedTree($categories, $category['level']+1);
+      		}
+      		//$html .= buildNnestedTree($categories, $category['nleft']+1);
+      		$html .= '</li>';
+   		}
+
+   		$html .= '</ul>';
+
+
+   		// echo "<pre>";
+   		// echo "html";
+   		// var_dump($html);
+   		// echo "</pre>";
+   		return $html;
+   	}
+	}
 ?>
