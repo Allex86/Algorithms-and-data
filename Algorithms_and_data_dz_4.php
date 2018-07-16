@@ -1,11 +1,11 @@
 
 <?php 				//	-	-	-	-	-	Преобразование	-	-	-	-	-
 
-// $str = "(5+3)*2"; //выражение в инфиксе
+$str = "(5+3)*2"; //выражение в инфиксе
 // $str = "2+2*2";
-$str = "(x+42)^2+7*y-z";
+// $str = "(x+42)^2+7*y-z";
 
-echo rpn($str); //выведет 5 3 + 2 * Этот результат можно использовать в функции calc (см. ниже подзаголовок "Вычисление результата выражения в ОПЗ")
+// echo rpn($str); //выведет 5 3 + 2 * Этот результат можно использовать в функции calc (см. ниже подзаголовок "Вычисление результата выражения в ОПЗ")
 
 function rpn($str)
 {
@@ -155,24 +155,26 @@ function rpn($str)
 	{
 		$rpn[]=$stack_el;
 	}
-	
-	$rpn_str = implode(" ", $rpn); //запишем итоговый массив в строку
-	return $rpn_str; //функция возвращает строку, в которой исходное выражение представлено в ОПЗ
-}	
+
 	/* это для дебага
 	echo "<pre>";
 	print_r($rpn);
+	print_r($token);
 	print_r($out);
 	print_r($stack);
 	echo "</pre>";
 	*/
+	$rpn_str = implode(" ", $rpn); //запишем итоговый массив в строку
+	// return $rpn_str; //функция возвращает строку, в которой исходное выражение представлено в ОПЗ
+	return $rpn;
+}	
 
 //								-	-	-	-	-	Вычисление	-	-	-	-	-
 
 	// $expr = '3 4 5 * + 7 + 4 6 - /';
 	$expr = rpn($str);
 
-echo calc($expr);
+// echo calc($expr);
 
 function calc($str)
 {
@@ -212,5 +214,164 @@ function calc($str)
 		throw new Exception("Количество операторов не соответствует количеству операндов");
 	return array_pop($stack);
 }
+
+
+
+
+
+
+
+class BinaryNode {
+
+    public $value;
+    public $left;
+    public $right;
+
+    public function __construct( $value )
+    {
+        $this->value = $value;
+        $this->right = null;
+        $this->left = null;
+    }
+}
+
+
+class BinaryTree {
+
+    protected $root;
+
+    public function __construct()
+    {
+        $this->root = null;
+    }
+
+    public function isEmpty() {
+        return $this->root === null;
+    }
+
+    public function insert($item) {
+        $node = new BinaryNode($item);
+
+        if($this->isEmpty()) {
+            $this->root = $node;
+        } else {
+            $this->insertNode($node, $this->root);
+        }
+    }
+
+    protected function insertNode( $node, &$subtree) {
+        if($subtree === null) {
+            $subtree = $node;
+        }
+
+        else {
+            if($node->value > $subtree->value) {
+                $this->insertNode($node, $subtree->right);
+            } else if($node->value < $subtree->value) {
+                $this->insertNode($node, $subtree->left);
+            } else {
+
+            }
+
+        }
+
+    }
+
+    protected function &findNode($value, &$subtree) {
+        if(is_null($subtree)) {
+            return false;
+        }
+
+        if($subtree->value > $value) {
+            return $this->findNode($value, $subtree->left);
+        }
+        elseif ($subtree->value < $value) {
+            return $this->findNode($value, $subtree->right);
+        } else {
+            return $subtree;
+        }
+
+
+    }
+
+    public function delete($value) {
+
+        if($this->isEmpty()) {
+            throw new \Exception('Tree is emtpy');
+        }
+
+        $node = &$this->findNode($value, $this->root);
+
+        if($node) {
+            $this->deleteNode($node);
+        }
+
+        return $this;
+
+    }
+
+    protected function deleteNode( BinaryNode &$node) {
+        if( is_null ($node->left)  && is_null($node->right)) {
+            $node = null;
+        }
+
+        elseif (is_null($node->left)) {
+            $node = $node->right;
+        }
+
+        elseif (is_null($node->right)) {
+            $node = $node->left;
+        }
+
+        else {
+
+            if(is_null($node->right->left)) {
+                $node->right->left = $node->left;
+                $node = $node->right;
+            }
+
+            else {
+                $node->value = $node->right->left->value;
+                $this->deleteNode($node->right->left);
+            }
+
+        }
+
+    }
+
+
+}
+
+// $tree = new BinaryTree();
+// $tree->insert(5);
+// $tree->insert(3);
+// $tree->insert(7);
+// $tree->insert(6);
+
+
+function arrayToTree($str)
+ {
+ 	$arr = ['x', '42', '+', '2', '^', '7', '+', 'y', '*', 'z', '-'];
+ 	//$arr = rpn($str);
+ 	$tree = new BinaryTree();
+ 	foreach($arr as $ar)
+ 	{
+ 		$tree->insert($ar);
+ 	}
+ 	echo "<pre>";
+	var_dump($tree);
+	echo "</pre>";
+ } 
+ arrayToTree($str);
+
+
+// echo "<pre>";
+// var_dump($tree);
+// echo "</pre>";
+
+// var_dump($tree->findNode(7,$tree->root));
+// var_dump($tree);
+// $tree->delete(7);
+// var_dump($tree);
 
 ?>
